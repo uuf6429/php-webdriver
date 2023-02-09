@@ -40,17 +40,24 @@ class DriverService
     private $process;
 
     /**
+     * @var string|null
+     */
+    private $logPath;
+
+    /**
      * @param string $executable
      * @param int $port The given port the service should use.
      * @param array $args
      * @param array|null $environment Use the system environment if it is null
+     * @param string|null $logPath Name of the file where process output should be logged
      */
-    public function __construct($executable, $port, $args = [], $environment = null)
+    public function __construct($executable, $port, $args = [], $environment = null, ?string $logPath = null)
     {
         $this->setExecutable($executable);
         $this->url = sprintf('http://localhost:%d', $port);
         $this->args = $args;
         $this->environment = $environment ?: $_ENV;
+        $this->logPath = $logPath;
     }
 
     /**
@@ -71,7 +78,12 @@ class DriverService
         }
 
         $this->process = $this->createProcess();
-        $this->process->start();
+
+        $this->process->start(function ($_, $buffer) {
+            if ($this->logPath !== null) {
+                file_put_contents($this->logPath, $buffer . PHP_EOL, FILE_APPEND | LOCK_EX);
+            }
+        });
 
         $this->checkWasStarted($this->process);
 

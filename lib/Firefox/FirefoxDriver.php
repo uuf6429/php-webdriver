@@ -20,7 +20,7 @@ class FirefoxDriver extends LocalWebDriver
 
     /**
      * Creates a new FirefoxDriver using default configuration.
-     * This includes starting a new geckodriver process  each time this method is called. However this may be
+     * This includes starting a new geckodriver process each time this method is called. However, this may be
      * unnecessary overhead - instead, you can start the process once using FirefoxDriverService and pass
      * this instance to startUsingDriverService() method.
      *

@@ -19,7 +19,7 @@ class FirefoxDriverService extends DriverService
     /**
      * @return static
      */
-    public static function createDefaultService()
+    public static function createDefaultService(?string $logPath = null)
     {
         $pathToExecutable = getenv(static::WEBDRIVER_FIREFOX_DRIVER);
         if ($pathToExecutable === false || $pathToExecutable === '') {
@@ -29,6 +29,6 @@ class FirefoxDriverService extends DriverService
         $port = 9515; // TODO: Get another free port if the default port is used.
         $args = ['-p=' . $port];
 
-        return new static($pathToExecutable, $port, $args);
+        return new static($pathToExecutable, $port, $args, null, $logPath);
     }
 }

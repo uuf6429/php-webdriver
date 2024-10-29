@@ -476,7 +476,7 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
     public function getTouch()
     {
         if (!$this->touch) {
-            $this->touch = new RemoteTouchScreen($this->getExecuteMethod());
+            $this->touch = new RemoteTouchScreen($this->getExecuteMethod(), $this->isW3cCompliant);
         }
 
         return $this->touch;

@@ -14,10 +14,15 @@ class RemoteTouchScreen implements WebDriverTouchScreen
      * @var RemoteExecuteMethod
      */
     private $executor;
+    /**
+     * @var bool
+     */
+    private $isW3cCompliant;
 
-    public function __construct(RemoteExecuteMethod $executor)
+    public function __construct(RemoteExecuteMethod $executor, $isW3cCompliant = false)
     {
         $this->executor = $executor;
+        $this->isW3cCompliant = $isW3cCompliant;
     }
 
     /**
@@ -25,6 +30,31 @@ class RemoteTouchScreen implements WebDriverTouchScreen
      */
     public function tap(WebDriverElement $element)
     {
+        if ($this->isW3cCompliant) {
+            $location = $element->getLocation(); // TODO should we use getLocationOnScreenOnceScrolledIntoView()?
+            $this->executor->execute(DriverCommand::ACTIONS, [
+                'actions' => [
+                    [
+                        'type' => 'pointer',
+                        'id' => 'finger',
+                        'parameters' => ['pointerType' => 'touch'],
+                        'actions' => [
+                            [
+                                ['type'=> 'pointerMove', 'duration' => 0, 'x'=> $location->getX(), 'y'=> $location->getY()],
+                                ['type'=> 'pointerDown', 'button' => 0],
+                                // TODO do we need these?
+                                //      ['type'=> 'pause', 'duration' => 500],
+                                //      ['type'=> 'pointerMove', 'duration' => 1000, 'origin'=> 'pointer', 'x'=> -50, 'y'=> 0],
+                                ['type'=> 'pointerUp', 'button' => 0],
+                            ]
+                        ],
+                    ],
+                ],
+            ]);
+
+            return $this;
+        }
+
         $this->executor->execute(
             DriverCommand::TOUCH_SINGLE_TAP,
             ['element' => $element->getID()]

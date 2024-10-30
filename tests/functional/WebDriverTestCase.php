@@ -38,6 +38,8 @@ class WebDriverTestCase extends TestCase
             $this->setUpSauceLabs();
         } else {
             $browserName = getenv('BROWSER_NAME');
+            $runHeadless = getenv('RUN_HEADLESS') === false
+                || filter_var(getenv('RUN_HEADLESS'), FILTER_VALIDATE_BOOLEAN);
             if ($browserName === '' || $browserName === false) {
                 $this->markTestSkipped(
                     'To execute functional tests browser name must be provided in BROWSER_NAME environment variable'
@@ -46,8 +48,12 @@ class WebDriverTestCase extends TestCase
 
             if ($browserName === WebDriverBrowserType::CHROME) {
                 $chromeOptions = new ChromeOptions();
+
+                if ($runHeadless) {
+                    $chromeOptions->addArguments(['--headless=new']);
+                }
+
                 $chromeOptions->addArguments([
-                    '--headless=new',
                     '--window-size=1024,768',
                     '--no-sandbox', // workaround for https://github.com/SeleniumHQ/selenium/issues/4961
                     '--force-color-profile=srgb',

@@ -38,8 +38,7 @@ class WebDriverTestCase extends TestCase
             $this->setUpSauceLabs();
         } else {
             $browserName = getenv('BROWSER_NAME');
-            $runHeadless = getenv('RUN_HEADLESS') === false
-                || filter_var(getenv('RUN_HEADLESS'), FILTER_VALIDATE_BOOLEAN);
+            $disableHeadless = filter_var(getenv('DISABLE_HEADLESS') ?: '', FILTER_VALIDATE_BOOLEAN);
             if ($browserName === '' || $browserName === false) {
                 $this->markTestSkipped(
                     'To execute functional tests browser name must be provided in BROWSER_NAME environment variable'
@@ -49,7 +48,7 @@ class WebDriverTestCase extends TestCase
             if ($browserName === WebDriverBrowserType::CHROME) {
                 $chromeOptions = new ChromeOptions();
 
-                if ($runHeadless) {
+                if (!$disableHeadless) {
                     $chromeOptions->addArguments(['--headless=new']);
                 }
 
